@@ -1,10 +1,10 @@
 from bs4 import BeautifulSoup
-import simplejson
+import json
 import urllib2
 
 baseurl = 'http://www.aberdeencity.gov.uk/education_learning/local_history/archives/loc_onlineexhibitionschoollifeairraids'
-out = {'pages':[],
-  'copyright':"\u00a9 Aberdeen City and Aberdeenshire Archives"}
+out = []
+copyright = "\u00a9 Aberdeen City and Aberdeenshire Archives"
 
 
 def pagelist():
@@ -36,19 +36,23 @@ def extract_dc_metadata(soup):
 
 def extract_logbook_images(soup):
   """Handily all the relevant files are 'LOGBOOK'"""
-  images = []
- 
+  entries = []
+  
   for para in soup.find_all('td'):
+    entry = {}
     i = para.find('img')
     if i is None: continue
     if 'LOGBOOK' not in i['src']: continue
 
     school = para.h2
     lines = para.find_all('p')
-        
 
-    print i['src']
-    print "\n".join([l.text for l in lines])
+    entry['image'] = i['src']
+    entry['text'] = "\n".join([l.text for l in lines])
+    entry['text'].replace("\n\n",'')
+    entry['copyright'] = copyright
+    entries.append(entry)
+  return entries
 
 urls = pagelist()  
 for p in urls:
@@ -57,5 +61,6 @@ for p in urls:
   soup = BeautifulSoup(page)   
   meta = extract_dc_metadata(soup)
   imgs = extract_logbook_images(soup)
+  print json.dumps(imgs)
   
    
