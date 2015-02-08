@@ -3,7 +3,9 @@ import simplejson
 import urllib2
 
 baseurl = 'http://www.aberdeencity.gov.uk/education_learning/local_history/archives/loc_onlineexhibitionschoollifeairraids'
-out = []
+out = {'pages':[],
+  'copyright':"\u00a9 Aberdeen City and Aberdeenshire Archives"}
+
 
 def pagelist():
   """List the six pages of air raid logbooks"""
@@ -22,7 +24,7 @@ def extract_dc_metadata(soup):
   for m in soup.find_all('meta'):
     
     # Skip over fields we don't like explicitly
-    if m.has_key('name') is False: continue
+    if m.has_attr('name') is False: continue
     if 'width' in m['content']: continue
     if m['name'] == 'GENERATOR': continue
 
@@ -35,10 +37,18 @@ def extract_dc_metadata(soup):
 def extract_logbook_images(soup):
   """Handily all the relevant files are 'LOGBOOK'"""
   images = []
-  
-  for i in soup.find_all('img'):
+ 
+  for para in soup.find_all('td'):
+    i = para.find('img')
+    if i is None: continue
     if 'LOGBOOK' not in i['src']: continue
+
+    school = para.h2
+    lines = para.find_all('p')
+        
+
     print i['src']
+    print "\n".join([l.text for l in lines])
 
 urls = pagelist()  
 for p in urls:
@@ -46,6 +56,6 @@ for p in urls:
   page = geturl(p)
   soup = BeautifulSoup(page)   
   meta = extract_dc_metadata(soup)
-  print meta
   imgs = extract_logbook_images(soup)
+  
    
