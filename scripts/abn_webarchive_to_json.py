@@ -49,18 +49,23 @@ def extract_logbook_images(soup):
 
     entry['image'] = i['src']
     entry['text'] = "\n".join([l.text for l in lines])
+    # this didn't work?
     entry['text'].replace("\n\n",'')
     entry['copyright'] = copyright
     entries.append(entry)
+
   return entries
 
 urls = pagelist()  
+items = []
 for p in urls:
-  print p
   page = geturl(p)
   soup = BeautifulSoup(page)   
   meta = extract_dc_metadata(soup)
   imgs = extract_logbook_images(soup)
-  print json.dumps(imgs)
+  for i in imgs: 
+    items.append(i)
+
+print json.dumps(items)
   
    
