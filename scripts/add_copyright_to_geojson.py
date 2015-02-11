@@ -9,4 +9,4 @@ data = json.load(open(file))
 
 data['copyright'] = copyright
 
-print json.dumps(data,indent=2)
+print json.dumps(data, indent=2)

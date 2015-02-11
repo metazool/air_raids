@@ -66,6 +66,6 @@ for p in urls:
   for i in imgs: 
     items.append(i)
 
-print json.dumps(items)
+print json.dumps(items, indent=2)
   
    
